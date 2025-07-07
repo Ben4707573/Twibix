@@ -890,7 +890,7 @@ export default function CubeTimerApp() {
                     <p>This is an open source project under the GPL-3.0 license.</p>
                     <div className="flex items-center mt-4">
                       <a 
-                        href="https://github.com/bengo4/twibix" 
+                        href="https://github.com/Ben4707573/Twibix" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -1355,12 +1355,12 @@ export default function CubeTimerApp() {
               </p>
               <p className="mb-2">
                 For more information, visit the{" "}
-                <a href="https://github.com/your-repo/twibix" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                <a href="https://github.com/Ben4707573/Twibix" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                   GitHub repository
                 </a>.
               </p>
               <p>
-                Developed by Your Name. © 2023
+                Developed by Ben4707573. © 2025
               </p>
             </div>
 
