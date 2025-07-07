@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found | Twibix Rubik's Cube Timer</title>
+    <title>Page Not Found | Twibix Rubik's Cube Timer</title>
+    <meta http-equiv="refresh" content="3;url=/">
     <link rel="icon" href="favicon.ico" type="image/x-icon" sizes="16x16"/>
     <style>
         body {
@@ -54,6 +55,20 @@
             vertical-align: middle;
             font-weight: 600;
         }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         @media (prefers-color-scheme: dark) {
             body {
                 background-color: #1a1a1a;
@@ -72,6 +87,10 @@
             a:hover {
                 color: #3498db;
             }
+            .spinner {
+                border: 4px solid rgba(255, 255, 255, 0.1);
+                border-left-color: #5dade2;
+            }
         }
     </style>
 </head>
@@ -79,7 +98,7 @@
     <div class="container">
         <h1>404</h1>
         <p>Oops! The page you're looking for doesn't exist.</p>
-        <p>Let's get you back to the timer.</p>
+        <p>Redirecting to the timer app in a few seconds... <div class="spinner"></div></p>
         <p><a href="index.html">Return to Homepage</a></p>
         <p><small>Twibix <span class="beta-badge">BETA</span></small></p>
     </div>
