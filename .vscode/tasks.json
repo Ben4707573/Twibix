@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Rubik's Cube Timer",
+			"type": "shell",
+			"command": "cd /home/bengo/Documents/programing/rubiks-cube-timer && npm run dev",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
