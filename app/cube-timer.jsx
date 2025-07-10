@@ -315,16 +315,25 @@ export default function CubeTimerApp() {
   const [settings, setSettings] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedSettings = localStorage.getItem('cuboSettings');
-      return savedSettings ? JSON.parse(savedSettings) : {
-        useSpaceBar: true,
-        useInspection: false,
-        inspectionDuration: 15, // Default inspection time is 15 seconds
-        useSounds: true,
-        darkMode: true,
-        debugMode: false,
-        hideDuringSolve: false, // Hide UI during solve, off by default
-        useHoldDelay: true // Use the 0.5s hold delay, on by default
-      };
+      if (savedSettings) {
+        return JSON.parse(savedSettings);
+      } else {
+        // Check if user is on mobile device for default settings
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window) || 
+                         (navigator.maxTouchPoints > 0);
+        
+        return {
+          useSpaceBar: true,
+          useInspection: false,
+          inspectionDuration: 15, // Default inspection time is 15 seconds
+          useSounds: true,
+          darkMode: true,
+          debugMode: false,
+          hideDuringSolve: false, // Hide UI during solve, off by default
+          useHoldDelay: !isMobile // Disable hold delay on mobile by default, enable on desktop
+        };
+      }
     }
     return {
       useSpaceBar: true,
@@ -334,7 +343,7 @@ export default function CubeTimerApp() {
       darkMode: true,
       debugMode: false,
       hideDuringSolve: false, // Hide UI during solve, off by default
-      useHoldDelay: true // Use the 0.5s hold delay, on by default
+      useHoldDelay: true // Use the 0.5s hold delay, on by default for server-side rendering
     };
   });
 
