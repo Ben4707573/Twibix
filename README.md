@@ -2,6 +2,9 @@
 
 A feature-rich Rubik's Cube timer application built with Next.js for speedcubers of all levels.
 
+#Updates#
+Added compatability on mobile, Fxed errors, Added a sitemap, Added a Costum 404 page. 
+
 ## ⚠️ Beta Version Notice
 
 **This is a beta version and not a full release.** Some features may not work as expected or may have bugs. Please report any issues you encounter in the comments.
