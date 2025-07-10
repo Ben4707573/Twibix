@@ -141,7 +141,7 @@ const ALGORITHMS = {
       { name: 'Single Parity', algorithm: "4Rw U2 4Rw' U2 4Rw U2 4Rw' U2 4Rw U2 4Rw'" }
     ]
   },
-  'Pyraminx': {
+  'pyraminx': {
     'Top First': [
       { name: 'Basic Algorithm', algorithm: "R U R' U R U R'" },
       { name: 'Left Algorithm', algorithm: "L' U' L U' L' U' L" }
@@ -157,7 +157,7 @@ const ALGORITHMS = {
       { name: 'Pi', algorithm: "R U' R' U R U' R' U R U R'" }
     ]
   },
-  'Skewb': {
+  'skewb': {
     'Layer by Layer': [
       { name: 'Right Sledgehammer', algorithm: "R' L R L'" },
       { name: 'Left Sledgehammer', algorithm: "L R' L' R" },
@@ -169,7 +169,49 @@ const ALGORITHMS = {
       { name: 'Diagonal Corner Swap', algorithm: "R L' R' L R L' R' L" }
     ]
   },
-  'Megaminx': {
+  'sq1': {
+    'Cube Shape': [
+      { name: 'Kite to Kite', algorithm: "(1,0) / (3,3) / (0,-3)" },
+      { name: 'Barrel to Square', algorithm: "/ (3,0) / (3,0) / (3,0)" },
+      { name: 'Shield to Square', algorithm: "(0,-1) / (0,3) / (0,-3) / (0,1)" },
+      { name: 'Scallop to Square', algorithm: "(1,0) / (3,0) / (3,0) / (0,3) / (0,-3)" },
+      { name: 'Mushroom to Square', algorithm: "(0,-1) / (-3,0) / (-3,0) / (0,-3) / (0,3)" }
+    ],
+    'Corner Orientation': [
+      { name: 'All Corners', algorithm: "/ (3,3) / (3,0) / (3,3) / (0,3)" },
+      { name: 'Two Adjacent', algorithm: "/ (3,0) / (3,3) / (0,3)" },
+      { name: 'Two Opposite', algorithm: "/ (6,0) / (3,3) / (0,3)" }
+    ],
+    'Edge Orientation': [
+      { name: 'All Edges', algorithm: "(1,0) / (0,3) / (-1,-1) / (0,3) / (1,1)" },
+      { name: 'Four Adjacent', algorithm: "(1,0) / (0,3) / (0,3) / (1,1)" },
+      { name: 'Four Opposite', algorithm: "(0,-1) / (0,3) / (0,3) / (0,1)" }
+    ],
+    'Permutation': [
+      { name: 'Adjacent Corner Swap', algorithm: "(1,0) / (3,3) / (3,0) / (3,3) / (-1,-1)" },
+      { name: 'Diagonal Corner Swap', algorithm: "(1,0) / (3,3) / (6,0) / (3,3) / (-1,-1)" },
+      { name: 'U-Perm', algorithm: "(0,-1) / (0,3) / (2,1) / (0,3) / (1,0)" },
+      { name: 'Z-Perm', algorithm: "(1,0) / (0,3) / (3,0) / (0,3) / (-1,-1)" }
+    ]
+  },
+  'clock': {
+    'Basic Patterns': [
+      { name: 'All Up 1', algorithm: "UR2+ DR1- DL3+ UL2- U1+ R2+ D1- L2+ ALL4+ y2 U4+ R1+ D4+ L1+ ALL2+" },
+      { name: 'All Up 2', algorithm: "UR1+ DR3+ DL1+ UL3+ U2+ R1+ D2+ L1+ ALL1+ y2 U3+ R2+ D3+ L2+ ALL3+" },
+      { name: 'Flip Edge', algorithm: "UR4+ DR2+ DL4+ UL2+ U2+ R2+ D2+ L2+ ALL2+ y2 U2+ R2+ D2+ L2+ ALL2+" }
+    ],
+    'Advanced Patterns': [
+      { name: 'Dots', algorithm: "UR3+ DR1+ DL3+ UL1+ U1+ R3+ D1+ L3+ ALL2+ y2 U5+ R1+ D5+ L1+ ALL4+" },
+      { name: 'Stripes', algorithm: "UR2+ DR4+ DL2+ UL4+ U3+ R2+ D3+ L2+ ALL1+ y2 U3+ R4+ D3+ L4+ ALL5+" },
+      { name: 'Checker', algorithm: "UR1+ DR3+ DL5+ UL1+ U4+ R1+ D4+ L1+ ALL3+ y2 U2+ R3+ D2+ L3+ ALL1+" }
+    ],
+    'Competition Methods': [
+      { name: 'Method 1 - Efficient', algorithm: "Use pins UL, UR, DL, DR first, then outer ring" },
+      { name: 'Method 2 - Speed', algorithm: "Solve all clocks on one side, flip, solve other side" },
+      { name: 'Method 3 - Beginner', algorithm: "Solve one clock at a time using basic pin combinations" }
+    ]
+  },
+  'megaminx': {
     'F2L': [
       { name: 'Basic Insert', algorithm: "R U R' U' R U R'" },
       { name: 'Sledgehammer', algorithm: "R' F R F'" }
@@ -180,23 +222,29 @@ const ALGORITHMS = {
       { name: 'PLL Star', algorithm: "R U R' F' R U R' U' R' F R2 U' R'" }
     ]
   },
-  'Square-1': {
+  'sq1': {
     'Cube Shape': [
       { name: 'Kite to Kite', algorithm: "(1,0) / (3,3) / (0,-3)" },
       { name: 'Barrel to Square', algorithm: "/ (3,0) / (3,0) / (3,0)" },
-      { name: 'Shield to Square', algorithm: "(0,-1) / (0,3) / (0,-3) / (0,1)" }
+      { name: 'Shield to Square', algorithm: "(0,-1) / (0,3) / (0,-3) / (0,1)" },
+      { name: 'Scallop to Square', algorithm: "(1,0) / (3,0) / (3,0) / (0,3) / (0,-3)" },
+      { name: 'Mushroom to Square', algorithm: "(0,-1) / (-3,0) / (-3,0) / (0,-3) / (0,3)" }
     ],
     'Corner Orientation': [
-      { name: 'Right Trigger', algorithm: "R U R' F' R U R' U' R' F R2 U' R'" },
-      { name: 'Left Trigger', algorithm: "L' U' L F L' U' L U L F' L2 U L" }
+      { name: 'All Corners', algorithm: "/ (3,3) / (3,0) / (3,3) / (0,3)" },
+      { name: 'Two Adjacent', algorithm: "/ (3,0) / (3,3) / (0,3)" },
+      { name: 'Two Opposite', algorithm: "/ (6,0) / (3,3) / (0,3)" }
     ],
     'Edge Orientation': [
-      { name: 'Adjacent', algorithm: "R U R' U R U R' U R U' R'" },
-      { name: 'Opposite', algorithm: "R U2 R' U' R U' R'" }
+      { name: 'All Edges', algorithm: "(1,0) / (0,3) / (-1,-1) / (0,3) / (1,1)" },
+      { name: 'Four Adjacent', algorithm: "(1,0) / (0,3) / (0,3) / (1,1)" },
+      { name: 'Four Opposite', algorithm: "(0,-1) / (0,3) / (0,3) / (0,1)" }
     ],
     'Permutation': [
-      { name: 'Adjacent Corner Swap', algorithm: "R U R' F' R U R' U' R' F R2 U' R' U'" },
-      { name: 'Diagonal Corner Swap', algorithm: "F R U' R' U' R U R' F' R U R' U' R' F R F'" }
+      { name: 'Adjacent Corner Swap', algorithm: "(1,0) / (3,3) / (3,0) / (3,3) / (-1,-1)" },
+      { name: 'Diagonal Corner Swap', algorithm: "(1,0) / (3,3) / (6,0) / (3,3) / (-1,-1)" },
+      { name: 'U-Perm', algorithm: "(0,-1) / (0,3) / (2,1) / (0,3) / (1,0)" },
+      { name: 'Z-Perm', algorithm: "(1,0) / (0,3) / (3,0) / (0,3) / (-1,-1)" }
     ]
   }
 };

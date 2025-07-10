@@ -1,106 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found | Twibix Rubik's Cube Timer</title>
-    <meta http-equiv="refresh" content="3;url=app">
-    <link rel="icon" href="favicon.ico" type="image/x-icon" sizes="16x16"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>404 - Page Not Found | Twibix</title>
+    <meta name="description" content="Page not found - Redirecting to Twibix Rubik's Cube Timer"/>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" sizes="16x16"/>
     <style>
         body {
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
             text-align: center;
         }
         .container {
-            max-width: 600px;
-            padding: 40px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            padding: 2rem;
         }
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #e74c3c;
-        }
-        p {
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        a {
-            color: #3498db;
-            text-decoration: none;
+        .error-code {
+            font-size: 6rem;
             font-weight: bold;
-            transition: color 0.3s;
+            margin: 0;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        a:hover {
-            color: #2980b9;
+        .error-message {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            opacity: 0.9;
         }
-        .beta-badge {
-            display: inline-block;
-            background-color: #ff9800;
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-left: 0.5rem;
-            vertical-align: middle;
-            font-weight: 600;
+        .redirect-message {
+            font-size: 1rem;
+            margin: 2rem 0;
+            opacity: 0.8;
         }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border-left-color: #3498db;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
-            display: inline-block;
+        .countdown {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+        .cube-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+            animation: spin 2s linear infinite;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1a1a1a;
-                color: #f0f0f0;
-            }
-            .container {
-                background-color: #2a2a2a;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            }
-            h1 {
-                color: #ff6b6b;
-            }
-            a {
-                color: #5dade2;
-            }
-            a:hover {
-                color: #3498db;
-            }
-            .spinner {
-                border: 4px solid rgba(255, 255, 255, 0.1);
-                border-left-color: #5dade2;
-            }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #ffd700;
+            color: #1e3c72;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+        .button:hover {
+            background: #ffed4e;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>404</h1>
-        <p>Oops! The page you're looking for doesn't exist.</p>
-        <p>Redirecting to the timer app in a few seconds... <div class="spinner"></div></p>
-        <p><a href="app">Go to Timer App</a></p>
-        <p><small>Twibix <span class="beta-badge">BETA</span></small></p>
+        <div class="cube-icon">🎲</div>
+        <h1 class="error-code">404</h1>
+        <p class="error-message">Page Not Found</p>
+        <p class="redirect-message">Redirecting you to the Twibix Cube Timer...</p>
+        <div class="countdown" id="countdown">3</div>
+        <a href="./timer.html" class="button">Go to Timer Now</a>
     </div>
+
+    <script>
+        let count = 3;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(function() {
+            count--;
+            if (count > 0) {
+                countdownEl.textContent = count;
+            } else {
+                clearInterval(timer);
+                window.location.href = './timer.html';
+            }
+        }, 1000);
+    </script>
 </body>
 </html>

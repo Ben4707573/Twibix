@@ -297,6 +297,8 @@ export default function CubeTimerApp() {
   const [newSessionName, setNewSessionName] = useState('');
   const [scramble, setScramble] = useState('Loading...');
   const [spaceState, setSpaceState] = useState('idle');
+  const [touchState, setTouchState] = useState('idle'); // For mobile touch handling
+  const [touchStartTime, setTouchStartTime] = useState(null);
   const [showScrambleVisualizer, setShowScrambleVisualizer] = useState(true);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [inspectionTime, setInspectionTime] = useState(0);
@@ -456,6 +458,10 @@ export default function CubeTimerApp() {
             setTimeout(() => setSpaceState('ready'), 500);
           }
         }
+      } else if (isRunning) {
+        // ANY key stops the timer when it's running
+        e.preventDefault();
+        handleStartStop();
       }
     };
     const handleKeyUp = (e) => {
@@ -480,11 +486,28 @@ export default function CubeTimerApp() {
         setSpaceState('idle');
       }
     };
+
+    // Touch event handlers for mobile
+    const handleTouchStart = (e) => {
+      if (isRunning) {
+        // If timer is running, any touch stops it
+        e.preventDefault();
+        handleStartStop();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    
+    // Add touch listeners for stopping timer
+    if (isRunning) {
+      document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    }
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener('touchstart', handleTouchStart);
     };
   }, [isRunning, spaceState, settings.useSpaceBar, settings.useInspection, settings.useHoldDelay, isInspecting, handleStartStop]);
 
@@ -997,7 +1020,7 @@ export default function CubeTimerApp() {
           </div>
         ) : (
           <div 
-            className={`text-6xl font-mono font-bold cursor-pointer select-none relative ${spaceState === 'pre-start' ? 'text-red-500' : spaceState === 'ready' ? 'text-green-400' : ''} ${shouldHideUI ? 'focused-timer' : ''}`}
+            className={`text-6xl font-mono font-bold cursor-pointer select-none relative ${spaceState === 'pre-start' || touchState === 'pre-start' ? 'text-red-500' : spaceState === 'ready' || touchState === 'ready' ? 'text-green-400' : ''} ${shouldHideUI ? 'focused-timer' : ''}`}
             onClick={() => {
               // Always allow click to start/stop timer
               if (!isInspecting) {
@@ -1040,11 +1063,67 @@ export default function CubeTimerApp() {
                 }
               }
             }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              if (!isRunning && !isInspecting && touchState === 'idle') {
+                setTouchStartTime(Date.now());
+                // If hold delay is disabled or inspection is enabled, skip the ready state delay
+                if (!settings.useHoldDelay || settings.useInspection) {
+                  setTouchState('ready');
+                } else {
+                  // Normal behavior with delay when hold delay is enabled
+                  setTouchState('pre-start');
+                  setTimeout(() => {
+                    if (touchState === 'pre-start') {
+                      setTouchState('ready');
+                    }
+                  }, 500);
+                }
+              }
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              if (touchState === 'ready') {
+                if (settings.useInspection && !isInspecting) {
+                  // Start inspection
+                  startInspection();
+                } else {
+                  // Start the timer
+                  handleStartStop();
+                }
+              } else if (isRunning) {
+                // Stop the timer
+                handleStartStop();
+              } else if (isInspecting) {
+                // End inspection and start timing
+                setIsInspecting(false);
+                handleStartStop();
+              }
+              setTouchState('idle');
+              setTouchStartTime(null);
+            }}
+            onTouchCancel={(e) => {
+              e.preventDefault();
+              setTouchState('idle');
+              setTouchStartTime(null);
+            }}
           >
             {formatTimeRaw(time)}s
             {!isRunning && !isInspecting && settings.useInspection && (
               <div className="text-xs text-gray-500 absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 whitespace-nowrap">
                 Press to start {settings.inspectionDuration}s inspection
+              </div>
+            )}
+            {!isRunning && !isInspecting && !settings.useInspection && (
+              <div className="text-xs text-gray-500 absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                {touchState === 'pre-start' || spaceState === 'pre-start' ? 'Hold...' : 
+                 touchState === 'ready' || spaceState === 'ready' ? 'Release to start!' :
+                 'Touch/Space to start'}
+              </div>
+            )}
+            {isRunning && (
+              <div className="text-xs text-gray-500 absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                Touch anywhere or press any key to stop
               </div>
             )}
           </div>
