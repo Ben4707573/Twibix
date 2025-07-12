@@ -41,7 +41,8 @@ export function SettingsMenu({
       darkMode: true,
       debugMode: false,
       hideDuringSolve: false,
-      useHoldDelay: true
+      useHoldDelay: true,
+      overwriteOnRetry: false
     };
     
     // Update temp settings with defaults
@@ -188,6 +189,21 @@ export function SettingsMenu({
                 </div>
               </div>
             )}
+            
+            <div className="flex items-center justify-between">
+              <label className="flex-1">
+                Overwrite on retry
+                <span className="block text-xs text-gray-500 dark:text-gray-400">
+                  Replace original solve with retry result instead of marking as retry
+                </span>
+              </label>
+              <div 
+                onClick={() => handleToggle('overwriteOnRetry')} 
+                className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${tempSettings.overwriteOnRetry ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                <div className={`absolute w-5 h-5 rounded-full bg-white top-0.5 transition-transform ${tempSettings.overwriteOnRetry ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+              </div>
+            </div>
             
             <div className="flex items-center justify-between">
               <label className="flex-1">

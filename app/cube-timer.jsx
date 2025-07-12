@@ -310,6 +310,7 @@ export default function CubeTimerApp() {
   const [manualTime, setManualTime] = useState('');
   const [manualScramble, setManualScramble] = useState('');
   const [showInfoDialog, setShowInfoDialog] = useState(false);
+  const [retryingIndex, setRetryingIndex] = useState(null); // Track which solve is being retried
   
   // Settings
   const [settings, setSettings] = useState(() => {
@@ -331,7 +332,8 @@ export default function CubeTimerApp() {
           darkMode: true,
           debugMode: false,
           hideDuringSolve: false, // Hide UI during solve, off by default
-          useHoldDelay: !isMobile // Disable hold delay on mobile by default, enable on desktop
+          useHoldDelay: !isMobile, // Disable hold delay on mobile by default, enable on desktop
+          overwriteOnRetry: false // Don't overwrite original solve when retrying, off by default
         };
       }
     }
@@ -343,7 +345,8 @@ export default function CubeTimerApp() {
       darkMode: true,
       debugMode: false,
       hideDuringSolve: false, // Hide UI during solve, off by default
-      useHoldDelay: true // Use the 0.5s hold delay, on by default for server-side rendering
+      useHoldDelay: true, // Use the 0.5s hold delay, on by default for server-side rendering
+      overwriteOnRetry: false // Don't overwrite original solve when retrying, off by default
     };
   });
 
@@ -393,7 +396,24 @@ export default function CubeTimerApp() {
   const addSolveToHistory = useCallback((solve) => {
     
     setHistory(prev => {
-      const newHistory = [...prev, solve];
+      let newHistory;
+      
+      // Check if we're overwriting a retry
+      if (retryingIndex !== null && settings.overwriteOnRetry) {
+        // Overwrite the solve at the retry index
+        newHistory = [...prev];
+        newHistory[retryingIndex] = {
+          ...solve,
+          timestamp: newHistory[retryingIndex].timestamp, // Keep original timestamp for ordering
+          manual: newHistory[retryingIndex].manual // Preserve manual flag if it was set
+        };
+        
+        // Clear the retrying index
+        setRetryingIndex(null);
+      } else {
+        // Normal behavior - add new solve
+        newHistory = [...prev, solve];
+      }
       
       // Directly update localStorage to ensure persistence
       try {
@@ -404,7 +424,7 @@ export default function CubeTimerApp() {
       
       return newHistory;
     });
-  }, []);
+  }, [retryingIndex, settings.overwriteOnRetry]);
 
   const handleStartStop = useCallback(() => {
     
@@ -771,18 +791,26 @@ export default function CubeTimerApp() {
   };
 
   const handleRetry = (index) => {
+    // Get the solve we're retrying
+    const solveToRetry = filteredHistory[index];
+    
     // Reset timer state
     setTime(0);
     setIsRunning(false);
     setStartTimeRef(null);
     setIsInspecting(false);
     
-    // Generate new scramble and update the current scramble
-    const retryScramble = generateScramble(cubeType);
-    setScramble(retryScramble);
+    // Use the same scramble from the original solve
+    setScramble(solveToRetry.scramble);
     
-    // Update the solve to mark it as retried
-    updateSolve(index, { scramble: retryScramble, status: 'Retry' });
+    // Store which solve is being retried for potential overwrite
+    if (settings.overwriteOnRetry) {
+      setRetryingIndex(index);
+    } else {
+      setRetryingIndex(null);
+      // Update the solve to mark it as retried (keep the original scramble)
+      updateSolve(index, { status: 'Retry' });
+    }
     
     // Start inspection if enabled, otherwise user can start manually
     if (settings.useInspection) {
@@ -811,6 +839,7 @@ export default function CubeTimerApp() {
   // Handle cube type change and reset session if needed
   const handleCubeTypeChange = (newCubeType) => {
     setCubeType(newCubeType);
+    setRetryingIndex(null); // Clear retry state when changing cube type
     
     // Check if the cube type exists in sessions, if not initialize it
     if (!sessions[newCubeType]) {
@@ -939,7 +968,10 @@ export default function CubeTimerApp() {
               <div className="flex flex-col items-center gap-1">
                 <SettingsMenu settings={settings} setSettings={setSettings} onResetHistory={handleResetHistory} />
                 <Button 
-                  onClick={() => setScramble(generateScramble(cubeType))}
+                  onClick={() => {
+                    setScramble(generateScramble(cubeType));
+                    setRetryingIndex(null); // Clear retry state when skipping scramble
+                  }}
                   size="sm"
                   variant="outline"
                   className="p-2 h-8 w-8 text-sm border-2 hover:bg-gray-100 dark:hover:bg-gray-700"

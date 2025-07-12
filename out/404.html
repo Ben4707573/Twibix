@@ -1,97 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>404 - Page Not Found | Twibix</title>
-    <meta name="description" content="Page not found - Redirecting to Twibix Rubik's Cube Timer"/>
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" sizes="16x16"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Twibix</title>
+    <meta name="description" content="Page not found - redirecting to Twibix Rubik's Cube Timer">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <style>
         body {
-            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: white;
-            min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            text-align: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
-            max-width: 500px;
+            text-align: center;
             padding: 2rem;
+            max-width: 500px;
         }
         .error-code {
             font-size: 6rem;
             font-weight: bold;
-            margin: 0;
-            color: #ffd700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            opacity: 0.8;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .error-message {
-            font-size: 1.5rem;
-            margin: 1rem 0;
+        .message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
             opacity: 0.9;
+            line-height: 1.6;
         }
-        .redirect-message {
+        .redirect-info {
             font-size: 1rem;
-            margin: 2rem 0;
-            opacity: 0.8;
+            opacity: 0.7;
+            margin-bottom: 2rem;
         }
         .countdown {
             font-size: 2rem;
             font-weight: bold;
-            color: #ffd700;
-            margin: 1rem 0;
+            color: #FFD700;
         }
-        .cube-icon {
-            font-size: 3rem;
-            margin: 1rem 0;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .button {
+        .manual-link {
             display: inline-block;
             padding: 12px 24px;
-            background: #ffd700;
-            color: #1e3c72;
-            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
             border-radius: 8px;
-            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
             margin-top: 1rem;
-            transition: background 0.3s ease;
         }
-        .button:hover {
-            background: #ffed4e;
+        .manual-link:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="cube-icon">🎲</div>
-        <h1 class="error-code">404</h1>
-        <p class="error-message">Page Not Found</p>
-        <p class="redirect-message">Redirecting you to the Twibix Cube Timer...</p>
-        <div class="countdown" id="countdown">3</div>
-        <a href="./timer.html" class="button">Go to Timer Now</a>
+        <div class="error-code">404</div>
+        <div class="logo">Twibix</div>
+        <div class="message">
+            Oops! The page you're looking for doesn't exist.<br>
+            Don't worry, we'll get you back to timing your solves!
+        </div>
+        <div class="redirect-info">
+            Redirecting to the timer in <span class="countdown" id="countdown">3</span> seconds...
+        </div>
+        <a href="./timer.html" class="manual-link">Go to Timer Now</a>
     </div>
-
     <script>
-        let count = 3;
-        const countdownEl = document.getElementById('countdown');
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
         
-        const timer = setInterval(function() {
-            count--;
-            if (count > 0) {
-                countdownEl.textContent = count;
-            } else {
+        const timer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
                 clearInterval(timer);
-                window.location.href = './timer.html';
+                window.location.replace('./timer.html');
             }
         }, 1000);
     </script>
