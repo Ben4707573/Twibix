@@ -1,9 +1,11 @@
 # Twibix - Rubik's Cube Timer (Beta)
 
 A feature-rich Rubik's Cube timer application built with Next.js for speedcubers of all levels.
+Visit the timer at twibix.me
 
 #Updates#
 Added compatability on mobile, Fxed errors, Added a sitemap, Added a Costum 404 page. 
+Notes: As for twibix only shows up on Google.
 
 ## ⚠️ Beta Version Notice
 
