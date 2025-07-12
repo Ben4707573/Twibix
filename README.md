@@ -102,6 +102,7 @@ The app uses:
 ## Credits
 
 - Scramble visualization logic adapted from [CSTimer](https://cstimer.net/)
+- (I havent found the correct way to implement this correcly yet)
 - Cube notation follows World Cube Association standards
 
 ## License
