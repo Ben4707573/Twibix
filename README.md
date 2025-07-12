@@ -4,7 +4,7 @@ A feature-rich Rubik's Cube timer application built with Next.js for speedcubers
 Visit the timer at [twibix.me](https://twibix.me/)
 
 #Updates#
-Added compatability on mobile, Fxed errors, Added a sitemap, Added a Costum 404 page. 
+Fixed the retry function, added an overwrite retry finction in the settings menu.
 Notes: As for twibix only shows up on Google.
 
 ## ⚠️ Beta Version Notice
