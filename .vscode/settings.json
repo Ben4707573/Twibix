@@ -1,8 +1,0 @@
-{
-  "files.associations": {
-    "out/**/*.html": "html"
-  },
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact"
-  }
-}
