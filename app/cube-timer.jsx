@@ -323,7 +323,6 @@ export default function CubeTimerApp() {
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                          ('ontouchstart' in window) || 
                          (navigator.maxTouchPoints > 0);
-        
         return {
           useSpaceBar: true,
           useInspection: false,
@@ -333,7 +332,8 @@ export default function CubeTimerApp() {
           debugMode: false,
           hideDuringSolve: false, // Hide UI during solve, off by default
           useHoldDelay: !isMobile, // Disable hold delay on mobile by default, enable on desktop
-          overwriteOnRetry: false // Don't overwrite original solve when retrying, off by default
+          overwriteOnRetry: false, // Don't overwrite original solve when retrying, off by default
+          abortKey: 'Escape' // Default abort key
         };
       }
     }
@@ -346,9 +346,18 @@ export default function CubeTimerApp() {
       debugMode: false,
       hideDuringSolve: false, // Hide UI during solve, off by default
       useHoldDelay: true, // Use the 0.5s hold delay, on by default for server-side rendering
-      overwriteOnRetry: false // Don't overwrite original solve when retrying, off by default
+      overwriteOnRetry: false, // Don't overwrite original solve when retrying, off by default
+      abortKey: 'Escape' // Default abort key
     };
   });
+  // Abort solve logic: stops timer and does not save the solve
+  const handleAbortSolve = useCallback(() => {
+    setIsRunning(false);
+    setStartTimeRef(null);
+    setTime(0);
+    // Optionally, generate a new scramble after abort
+    setScramble(generateScramble(cubeType));
+  }, [cubeType]);
 
   useEffect(() => {
     setScramble(generateScramble(cubeType));
@@ -475,6 +484,12 @@ export default function CubeTimerApp() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.code === settings.abortKey && isRunning) {
+        // Abort key pressed during solve: abort without saving
+        e.preventDefault();
+        handleAbortSolve();
+        return;
+      }
       if (e.code === 'Space' && settings.useSpaceBar) {
         e.preventDefault();
         if (!isRunning && !isInspecting && spaceState === 'idle') {
@@ -967,6 +982,9 @@ export default function CubeTimerApp() {
               </Dialog>
               <div className="flex flex-col items-center gap-1">
                 <SettingsMenu settings={settings} setSettings={setSettings} onResetHistory={handleResetHistory} />
+                <div className="text-xs text-gray-500 text-center mt-1">
+                  Abort key: <kbd>{settings.abortKey}</kbd>
+                </div>
                 <Button 
                   onClick={() => {
                     setScramble(generateScramble(cubeType));
@@ -979,6 +997,84 @@ export default function CubeTimerApp() {
                 >
                   ↻
                 </Button>
+                {/* Import from cstimer */}
+                <label className="mt-2 text-xs text-gray-500 cursor-pointer flex flex-col items-center">
+                  <span className="underline hover:text-blue-500">Import cstimer solves</span>
+                  <input
+                    type="file"
+                    accept=".txt,application/json"
+                    style={{ display: 'none' }}
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      try {
+                        const text = await file.text();
+                        let data;
+                        try {
+                          data = JSON.parse(text);
+                        } catch (err) {
+                          alert('Invalid file: not valid JSON');
+                          return;
+                        }
+                        // Find the session name that matches the current session
+                        // cstimer sessions are named session1, session2, ...
+                        // Try to match by session name in properties.sessionData
+                        let sessionKey = null;
+                        if (data.properties && data.properties.sessionData) {
+                          const sessionData = JSON.parse(data.properties.sessionData);
+                          for (const key in sessionData) {
+                            if (
+                              sessionData[key].name === session ||
+                              sessionData[key].name === Number(session) ||
+                              (sessionData[key].name + '') === session
+                            ) {
+                              sessionKey = 'session' + key;
+                              break;
+                            }
+                          }
+                        }
+                        // Fallback: use session1 if not found
+                        if (!sessionKey) sessionKey = 'session1';
+                        const solvesArr = data[sessionKey];
+                        if (!Array.isArray(solvesArr)) {
+                          alert('No solves found for this session in the file.');
+                          return;
+                        }
+                        // Map cstimer solves to Twibix solves
+                        const importedSolves = solvesArr.map((s) => {
+                          // s: [[status, time], scramble, comment, timestamp]
+                          const statusNum = s[0][0];
+                          let status = 'OK';
+                          if (statusNum === -1) status = 'DNF';
+                          else if (statusNum === 1) status = '+2';
+                          return {
+                            time: s[0][1],
+                            originalTime: s[0][1],
+                            scramble: s[1],
+                            cubeType: cubeType,
+                            session: session,
+                            status: status,
+                            timestamp: s[3] ? s[3] * 1000 : Date.now(),
+                            imported: true
+                          };
+                        });
+                        // Add imported solves to history
+                        setHistory(prev => {
+                          const filtered = prev.filter(h => !(h.imported && h.session === session && h.cubeType === cubeType));
+                          const newHistory = [...filtered, ...importedSolves];
+                          try {
+                            localStorage.setItem('cubeTimes', JSON.stringify(newHistory));
+                          } catch (e) {}
+                          return newHistory;
+                        });
+                        alert(`Imported ${importedSolves.length} solves to session '${session}'.`);
+                      } catch (err) {
+                        alert('Failed to import: ' + err.message);
+                      }
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
               </div>
             </div>
           </div>
