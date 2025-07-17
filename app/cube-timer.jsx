@@ -50,10 +50,38 @@ const SCRAMBLE_MOVES = {
   'pyraminx': ['U', "U'", 'L', "L'", 'R', "R'", 'B', "B'", 'u', "u'", 'l', "l'", 'r', "r'", 'b', "b'"],
   'skewb': ['U', "U'", 'L', "L'", 'R', "R'", 'B', "B'"],
   'sq1': ['(0,1)', '(1,0)', '(1,1)', '(2,0)', '(0,2)', '(3,0)', '(0,3)', '(2,2)', '(4,0)', '(0,4)', '(3,3)', '(2,-1)', '(-1,2)', '(1,-2)', '(-2,1)', '/'],
-  'clock': ['UR', 'DR', 'DL', 'UL', 'U', 'R', 'D', 'L', 'ALL']  // Clock pin positions and rotations
+  'clock': ['UR', 'DR', 'DL', 'UL', 'U', 'R', 'D', 'L', 'ALL'], // Clock pin positions and rotations
+  'megaminx': ['R++', 'R--', 'D++', 'D--', "U'", 'U~'] // Megaminx moves for scramble generation
 };
 
 function generateScramble(cubeType) {
+  if (cubeType === 'megaminx') {
+    // Megaminx scramble: 7 lines, each with 10 moves (R++/R--/D++/D--), then U'/U~ at end of each line
+    // Example: R++ D++ R-- D-- R-- D-- R-- D-- R-- D-- U'
+    // Official: 7 lines, each line ends with U' or U~ (randomly)
+    const lines = [];
+    for (let l = 0; l < 7; l++) {
+      let moves = [];
+      let prev = '';
+      for (let i = 0; i < 10; i++) {
+        let move;
+        do {
+          // Alternate R and D moves
+          if (i % 2 === 0) {
+            move = Math.random() < 0.5 ? 'R++' : 'R--';
+          } else {
+            move = Math.random() < 0.5 ? 'D++' : 'D--';
+          }
+        } while (move === prev);
+        moves.push(move);
+        prev = move;
+      }
+      // End of line: U' or U~ (randomly)
+      moves.push(Math.random() < 0.5 ? "U'" : 'U~');
+      lines.push('  ' + moves.join(' '));
+    }
+    return lines.join('\n');
+  }
   if (cubeType === 'clock') {
     // Official scramble: 9 pin moves, y2, 6 more moves
     const pins = ['UR', 'DR', 'DL', 'UL', 'U', 'R', 'D', 'L', 'ALL'];
@@ -124,6 +152,8 @@ function generateScramble(cubeType) {
     scrambleLength = (Math.floor(Math.random() * 4) + 12) * 2;
   } else if (cubeType === 'clock') {
     scrambleLength = 14; // Clock has a fixed format with 14 parts
+  } else if (cubeType === 'megaminx') {
+    scrambleLength = 70; // Not used, handled above
   } else {
     scrambleLength = 20; // Default
   }
@@ -1169,6 +1199,7 @@ export default function CubeTimerApp() {
               <option value="skewb">Skewb</option>
               <option value="sq1">Square-1</option>
               <option value="clock">Clock</option>
+          <option value="megaminx">Megaminx</option>
             </select>
             
             <div className="flex items-center gap-2">
