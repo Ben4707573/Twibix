@@ -55,7 +55,24 @@ const SCRAMBLE_MOVES = {
 
 function generateScramble(cubeType) {
   if (cubeType === 'clock') {
-    return generateClockScramble();
+    // Official scramble: 9 pin moves, y2, 6 more moves
+    const pins = ['UR', 'DR', 'DL', 'UL', 'U', 'R', 'D', 'L', 'ALL'];
+    const moves = [];
+    // First 9 moves
+    for (let i = 0; i < pins.length; i++) {
+      const num = Math.floor(Math.random() * 7); // 0-6
+      const sign = Math.random() < 0.5 ? '+' : '-';
+      moves.push(`${pins[i]}${num}${sign}`);
+    }
+    moves.push('y2');
+    // Next 6 moves: U, R, D, L, ALL
+    const postPins = ['U', 'R', 'D', 'L', 'ALL'];
+    for (let i = 0; i < postPins.length; i++) {
+      const num = Math.floor(Math.random() * 7);
+      const sign = Math.random() < 0.5 ? '+' : '-';
+      moves.push(`${postPins[i]}${num}${sign}`);
+    }
+    return moves.join(' ');
   }
   
   // If the puzzle type is not defined, default to 3x3
@@ -103,67 +120,121 @@ function generateScramble(cubeType) {
   } else if (cubeType === 'skewb') {
     scrambleLength = 8;
   } else if (cubeType === 'sq1') {
-    scrambleLength = 24; // Doubled from 12 to 24 moves
+    // 12–15 pairs (so 24–30 moves)
+    scrambleLength = (Math.floor(Math.random() * 4) + 12) * 2;
   } else if (cubeType === 'clock') {
     scrambleLength = 14; // Clock has a fixed format with 14 parts
   } else {
     scrambleLength = 20; // Default
   }
   
-  for (let i = 0; i < scrambleLength; i++) {
-    let move;
-    let face;
-    
-    do {
-      move = moves[Math.floor(Math.random() * moves.length)];
-      face = getBaseFace(move);
-      
-      // Special handling for Square-1: alternate between slice and turn moves
-      if (cubeType === 'sq1') {
-        if (i > 0) {
-          const prevIsSlice = prev === '/' || prev === "/'" || prev === '';
-          const currentIsSlice = move === '/' || move === "/'";
-          
-          // Ensure we alternate between slice moves and turn moves
-          if (prevIsSlice === currentIsSlice) {
-            continue;
-          }
-        }
-      }
-      
-      // Avoid repeating the same face or moving an opposite face consecutively
-    } while (face === prevFace || (prev && checkOpposite(face, prevFace)));
-    
-    scramble.push(move);
-    prev = move;
-    prevFace = face;
+  if (cubeType === 'sq1') {
+    // Alternate between (x,y) and /
+    const pairs = Math.floor(scrambleLength / 2);
+    const twists = [];
+    for (let i = 0; i < pairs; i++) {
+      // x and y in -6..6, not both zero
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * 13) - 6;
+        y = Math.floor(Math.random() * 13) - 6;
+      } while (x === 0 && y === 0);
+      twists.push(`(${x},${y})`);
+    }
+    // Build scramble string: (x,y)/ (x,y)/ ...
+    let scramble = [];
+    for (let i = 0; i < twists.length; i++) {
+      scramble.push(twists[i]);
+      scramble.push('/');
+    }
+    // Remove trailing slash for a cleaner look
+    if (scramble[scramble.length - 1] === '/') scramble.pop();
+    return scramble.join(' ');
   }
-  
-  // For Pyraminx, add random tip rotations at the end
   if (cubeType === 'pyraminx') {
-    // Possible tip rotations
+    // Only use face moves for main scramble
+    const pyraminxFaces = ['U', "U'", 'L', "L'", 'R', "R'", 'B', "B'"];
+    let prevFace = '';
+    let scramble = [];
+    for (let i = 0; i < scrambleLength; i++) {
+      let move, face;
+      do {
+        move = pyraminxFaces[Math.floor(Math.random() * pyraminxFaces.length)];
+        face = move[0];
+      } while (face === prevFace);
+      scramble.push(move);
+      prevFace = face;
+    }
+    // Add random tip moves at the end (same as before)
     const tips = ['u', "u'", 'l', "l'", 'r', "r'", 'b', "b'"];
     const usedTips = new Set();
-    
-    // Add 0-4 random tip rotations
     for (let i = 0; i < 4; i++) {
       if (Math.random() < 0.5) {
         let tip;
         do {
           tip = tips[Math.floor(Math.random() * 8)];
-          // Get base face of the tip (u, l, r, or b)
           const baseTip = tip.charAt(0);
-          // Ensure we don't use both u and u' in the same scramble
           if (usedTips.has(baseTip)) continue;
           usedTips.add(baseTip);
           break;
         } while (true);
-        
         scramble.push(tip);
       }
     }
+    return scramble.join(' ');
   }
-  
+  if (cubeType === '5x5') {
+    // Official 5x5 scramble: mix single and wide moves, avoid consecutive faces, 60 moves
+    const faces = ['U', 'D', 'F', 'B', 'L', 'R'];
+    const suffixes = ["", "'", "2"];
+    const wideSuffixes = ['w', "w'", "w2"];
+    let scramble = [];
+    let prevFace = '';
+    let prevType = '';
+    for (let i = 0; i < 60; i++) {
+      let move, face, type;
+      do {
+        face = faces[Math.floor(Math.random() * faces.length)];
+        // 50% chance wide move, 50% single
+        if (Math.random() < 0.5) {
+          // Wide move
+          const suf = wideSuffixes[Math.floor(Math.random() * wideSuffixes.length)];
+          move = face + suf;
+          type = 'w';
+        } else {
+          // Single move
+          const suf = suffixes[Math.floor(Math.random() * suffixes.length)];
+          move = face + suf;
+          type = 's';
+        }
+      } while (face === prevFace);
+      scramble.push(move);
+      prevFace = face;
+      prevType = type;
+    }
+    return scramble.join(' ');
+  }
+  // Default scramble logic for other cubes
+  for (let i = 0; i < scrambleLength; i++) {
+    let move;
+    let face;
+    do {
+      move = moves[Math.floor(Math.random() * moves.length)];
+      face = getBaseFace(move);
+      if (cubeType === 'sq1') {
+        if (i > 0) {
+          const prevIsSlice = prev === '/' || prev === "/'" || prev === '';
+          const currentIsSlice = move === '/' || move === "/'";
+          if (prevIsSlice === currentIsSlice) {
+            continue;
+          }
+        }
+      }
+    } while (face === prevFace || (prev && checkOpposite(face, prevFace)));
+    scramble.push(move);
+    prev = move;
+    prevFace = face;
+  }
   return scramble.join(' ');
 }
 
